@@ -1,0 +1,118 @@
+esphome:
+  name: display-$room
+  # sensor prototipo
+
+esp8266:
+  board: d1_mini
+
+# Enable logging
+logger:
+
+captive_portal:
+
+web_server:
+  port: 80
+  auth:
+    username: ${web_user}
+    password: ${web_password}
+
+# Enable Home Assistant API
+api:
+  encryption:
+    key: "eVaWC3o4Yw35DiPW6bvYGNWnuimDUzjHRfqS6/FD/GI="
+ota:
+  password: "87879a272f15b90df4708d94d23cc325"
+
+wifi:
+  ssid: $wifi_ssid
+  password: $wifi_password
+  #fast_connect: on
+  manual_ip:
+    static_ip: $ip
+    gateway: 192.168.1.1
+    subnet: 255.255.255.0
+    dns1: 8.8.8.8
+
+sensor:
+  - platform: homeassistant
+    id: ${device_name}_acs
+    name: ${device_name} acs
+    entity_id: sensor.d1_resol_solar_t_retorno_acs
+    unit_of_measurement: "°C"
+    state_class: measurement
+    accuracy_decimals: 1
+    on_value_range: 
+      - below: ${t_ok}
+        then:
+          - output.turn_off: ${device_name}_green_led
+      - above: ${t_ok}
+        then:
+          - output.turn_on: ${device_name}_green_led
+output:
+- platform: gpio
+  pin: GPIO02
+  id: ${device_name}_green_led
+  inverted: True
+- platform: gpio
+  pin: GPIO0
+  id: ${device_name}_red_led
+  inverted: True 
+
+binary_sensor:
+  - platform: homeassistant
+    id: ${device_name}_acs_status
+    entity_id: ${ha_hotwater_charge}
+    internal: true
+    on_state:
+      then:
+        - if:
+            condition:
+              binary_sensor.is_on: ${device_name}_acs_status
+            then:
+              - logger.log: "ON"
+              - output.turn_on: ${device_name}_red_led
+              #- delay: 1s
+            else:
+              - logger.log: "OFF"
+              - output.turn_off: ${device_name}_red_led
+
+  - platform: gpio
+    pin:
+      number: GPIO13 #D7
+      mode: INPUT_PULLUP
+      inverted: False
+    name: display ${room} ACS
+    id: acs
+    internal: True
+    filters:
+      - delayed_on: 10ms
+      - delayed_off: 10ms
+    on_press:
+      then:
+      - homeassistant.service:
+          service: switch.toggle
+          data: 
+            entity_id: ${ha_hotwater_charge} 
+
+i2c:
+  sda: GPIO4 #D2
+  scl: GPIO5 #D1
+
+font:
+  - file: "fonts/bebasneue.ttf"
+    id: my_font
+    size: 60
+  - file: "fonts/futuram.ttf"
+    id: my_font_tiny
+    size: 6
+    
+display:
+  - platform: ssd1306_i2c
+    model: "SSD1306 128x64"
+    rotation: 0
+    update_interval: 2s
+    id: test
+    address: 0x3C
+    lambda: |-
+      it.print (0, 0, id(my_font_tiny), "4"); 
+      it.printf(64, 10, id(my_font), TextAlign::TOP_CENTER, "%.1f°", id(${device_name}_acs).state);
