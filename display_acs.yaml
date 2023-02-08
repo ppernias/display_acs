@@ -18,10 +18,9 @@ web_server:
 
 # Enable Home Assistant API
 api:
-  encryption:
-    key: "eVaWC3o4Yw35DiPW6bvYGNWnuimDUzjHRfqS6/FD/GI="
+
 ota:
-  password: "87879a272f15b90df4708d94d23cc325"
+  password: $ota_password
 
 wifi:
   ssid: $wifi_ssid
