@@ -112,6 +112,7 @@ display:
     update_interval: 2s
     id: test
     address: 0x3C
+    frequency: 800kHz
     lambda: |-
       it.print (0, 0, id(my_font_tiny), "4"); 
       it.printf(64, 10, id(my_font), TextAlign::TOP_CENTER, "%.1f°", id(${device_name}_acs).state);
