@@ -97,6 +97,7 @@ binary_sensor:
 i2c:
   sda: GPIO4 #D2
   scl: GPIO5 #D1
+  frequency: 400kHz
 
 
 font:
