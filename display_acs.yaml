@@ -40,6 +40,7 @@ sensor:
     unit_of_measurement: "°C"
     state_class: measurement
     accuracy_decimals: 1
+    internal: True
     on_value_range: 
       - below: ${t_ok}
         then:
