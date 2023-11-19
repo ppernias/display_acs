@@ -32,6 +32,16 @@ wifi:
   #  subnet: 255.255.255.0
   #  dns1: 8.8.8.8
 
+output:
+- platform: gpio
+  pin: GPIO02
+  id: ${device_name}_green_led
+  inverted: True
+- platform: gpio
+  pin: GPIO0
+  id: ${device_name}_red_led
+  inverted: True 
+
 sensor:
   - platform: homeassistant
     id: ${device_name}_acs
@@ -48,16 +58,6 @@ sensor:
       - above: ${t_ok}
         then:
           - output.turn_on: ${device_name}_green_led
-output:
-- platform: gpio
-  pin: GPIO02
-  id: ${device_name}_green_led
-  inverted: True
-- platform: gpio
-  pin: GPIO0
-  id: ${device_name}_red_led
-  inverted: True 
-
 binary_sensor:
   - platform: homeassistant
     id: ${device_name}_acs_status
