@@ -20,6 +20,7 @@ web_server:
 api:
 
 ota:
+  platform: esphome
   password: $ota_password
 
 wifi:
